@@ -1,55 +1,90 @@
-# Designer Portfolio Website
+# 设计师作品集网站
 
-A modern, minimalist portfolio website for showcasing design work, built with HTML5, CSS3, JavaScript, and GSAP animations.
+这是一个个人设计师作品集网站，展示了我的项目和技能。
 
-## Features
+## 项目结构
 
-- Clean, minimalist design with focus on the work
-- Responsive layout that works on all devices
-- Smooth animations and transitions using GSAP
-- Filterable work gallery
-- Detailed project pages
-- About section with timeline for experience and education
-- Contact form
-- Mobile-friendly navigation
+```
+├── index.html          # 主页
+├── works/              # 项目详情页
+│   ├── work1.html      # Millmane应用界面
+│   ├── work2.html      # Oitcut网站
+│   ├── work3.html      # 耳机产品品牌设计
+│   ├── work4.html      # 产品设计流程
+│   ├── work5.html      # 沙发设计
+│   └── work6.html      # 极简科技产品
+├── assets/             # 静态资源
+│   └── images/         # 图片文件
+├── .gitignore          # Git忽略文件
+└── README.md           # 项目说明
+```
 
-## Technologies Used
+## 技术栈
 
 - HTML5
-- CSS3 with Tailwind CSS
-- JavaScript
-- GSAP (GreenSock Animation Platform)
-- Font Awesome icons
+- Tailwind CSS
+- Font Awesome
+- GSAP 动画库
 
-## Project Structure
+## 部署到 Vercel
 
-```
-/
-├── index.html          # Main portfolio page
-├── works/              # Project detail pages
-│   ├── work1.html
-│   └── ...
-├── css/                # CSS files
-│   └── style.css
-├── js/                 # JavaScript files
-│   └── script.js
-└── assets/             # Images and other assets
-    └── images/
-```
+### 方法一：通过 Vercel 网站部署
 
-## How to Use
+1. **注册 Vercel 账号**
+   - 访问 [Vercel 官网](https://vercel.com/) 并注册账号
 
-1. Clone or download the repository
-2. Open `index.html` in a web browser
-3. To view project details, click on any work item in the gallery
+2. **创建新项目**
+   - 登录后，点击 "New Project"
+   - 选择 "Import Project"
+   - 选择 "Import Git Repository"
 
-## Customization
+3. **连接仓库**
+   - 将本地仓库推送到 GitHub/GitLab/Bitbucket
+   - 在 Vercel 中选择你的仓库
 
-- Replace the images in `assets/images/` with your own work
-- Update the text content in `index.html` and the work detail pages
-- Modify the color scheme in the Tailwind CSS configuration
-- Adjust animations in the JavaScript files
+4. **配置部署**
+   - 保持默认配置即可
+   - 点击 "Deploy"
 
-## License
+5. **部署完成**
+   - 部署成功后，Vercel 会提供一个唯一的 URL
 
-This project is licensed under the MIT License.
+### 方法二：通过 Vercel CLI 部署
+
+1. **安装 Vercel CLI**
+   ```bash
+   npm install -g vercel
+   ```
+
+2. **登录 Vercel**
+   ```bash
+   vercel login
+   ```
+
+3. **部署项目**
+   ```bash
+   vercel
+   ```
+
+4. **确认部署**
+   - 按照提示完成部署配置
+   - 部署成功后，会获得一个部署 URL
+
+## 本地运行
+
+1. **启动本地服务器**
+   ```bash
+   python3 -m http.server 8000
+   ```
+
+2. **访问网站**
+   - 打开浏览器，访问 `http://localhost:8000`
+
+## 联系方式
+
+- 邮箱：your.email@example.com
+- 社交媒体：
+  - Behance
+  - Dribbble
+  - Instagram
+  - LinkedIn
