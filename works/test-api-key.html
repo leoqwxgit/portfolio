@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Key 测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 3px; }
+        button { padding: 10px 20px; margin: 5px; background: #0066ff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0052cc; }
+        .log { white-space: pre-wrap; font-family: monospace; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>API Key 有效性测试</h1>
+    
+    <div class="test-section">
+        <h2>测试API Key</h2>
+        <button onclick="testApiKey()">测试API Key</button>
+        <div id="api-key-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试简单地址解析</h2>
+        <input type="text" id="simple-address" value="北京市" style="padding: 10px; width: 300px;">
+        <button onclick="testSimpleGeocode()">测试简单地址</button>
+        <div id="simple-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>日志</h2>
+        <div id="log" class="result log"></div>
+    </div>
+
+    <script>
+        // 高德地图API Key
+        const amapKey = '46c5a281852be620a878b135e327d3b9';
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += new Date().toLocaleString() + ': ' + message + '\n';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function testApiKey() {
+            const resultDiv = document.getElementById('api-key-result');
+            
+            resultDiv.innerHTML = '测试中...';
+            log('开始测试API Key');
+            
+            // 使用高德地图的IP定位API来测试API Key
+            const url = `https://restapi.amap.com/v3/ip?key=${amapKey}`;
+            log('请求URL: ' + url);
+            
+            fetch(url)
+                .then(response => {
+                    log('响应状态: ' + response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    log('API Key测试结果: ' + JSON.stringify(data, null, 2));
+                    
+                    if (data.status === '1') {
+                        resultDiv.innerHTML = '<h3>API Key有效</h3><p>IP定位成功</p><p>城市: ' + (data.city || '未知') + '</p>';
+                    } else {
+                        resultDiv.innerHTML = `<h3>API Key无效</h3><p>状态码: ${data.status}</p><p>错误信息: ${data.info || '无'}</p>`;
+                    }
+                })
+                .catch(error => {
+                    log('API Key测试错误: ' + error);
+                    resultDiv.innerHTML = '<h3>测试错误</h3><p>' + error + '</p>';
+                });
+        }
+        
+        function testSimpleGeocode() {
+            const address = document.getElementById('simple-address').value;
+            const resultDiv = document.getElementById('simple-result');
+            
+            resultDiv.innerHTML = '解析中...';
+            log('开始解析简单地址: ' + address);
+            
+            const url = `https://restapi.amap.com/v3/geocode/geo?key=${amapKey}&address=${encodeURIComponent(address)}`;
+            log('请求URL: ' + url);
+            
+            fetch(url)
+                .then(response => {
+                    log('响应状态: ' + response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    log('简单地址解析结果: ' + JSON.stringify(data, null, 2));
+                    
+                    if (data.status === '1' && data.geocodes.length > 0) {
+                        const location = data.geocodes[0].location;
+                        resultDiv.innerHTML = `<h3>解析成功</h3><p>坐标: ${location}</p><p>地址: ${data.geocodes[0].formatted_address}</p>`;
+                    } else {
+                        resultDiv.innerHTML = `<h3>解析失败</h3><p>状态码: ${data.status}</p><p>错误信息: ${data.info || '无'}</p>`;
+                    }
+                })
+                .catch(error => {
+                    log('解析错误: ' + error);
+                    resultDiv.innerHTML = '<h3>解析错误</h3><p>' + error + '</p>';
+                });
+        }
+        
+        // 页面加载时自动测试API Key
+        window.onload = function() {
+            testApiKey();
+        };
+    </script>
+</body>
+</html>

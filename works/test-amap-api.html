@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高德地图API测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 3px; }
+        button { padding: 10px 20px; margin: 5px; background: #0066ff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0052cc; }
+        .log { white-space: pre-wrap; font-family: monospace; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>高德地图API测试</h1>
+    
+    <div class="test-section">
+        <h2>测试地址解析</h2>
+        <input type="text" id="address" value="深圳龙岗岗头地铁站" style="padding: 10px; width: 300px;">
+        <button onclick="testGeocode()">测试地址解析</button>
+        <div id="geocode-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试附近餐厅搜索</h2>
+        <button onclick="testNearbySearch()">测试附近餐厅搜索</button>
+        <div id="search-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>日志</h2>
+        <div id="log" class="result log"></div>
+    </div>
+
+    <script>
+        // 高德地图API Key
+        const amapKey = '46c5a281852be620a878b135e327d3b9';
+        let currentLocation = null;
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += new Date().toLocaleString() + ': ' + message + '\n';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function testGeocode() {
+            const address = document.getElementById('address').value;
+            const resultDiv = document.getElementById('geocode-result');
+            
+            resultDiv.innerHTML = '解析中...';
+            log('开始解析地址: ' + address);
+            
+            const url = `https://restapi.amap.com/v3/geocode/geo?key=${amapKey}&address=${encodeURIComponent(address)}`;
+            log('请求URL: ' + url);
+            
+            fetch(url)
+                .then(response => {
+                    log('响应状态: ' + response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    log('地址解析结果: ' + JSON.stringify(data, null, 2));
+                    
+                    if (data.status === '1' && data.geocodes.length > 0) {
+                        const location = data.geocodes[0].location;
+                        const [lng, lat] = location.split(',');
+                        currentLocation = { lng, lat };
+                        
+                        resultDiv.innerHTML = `
+                            <h3>解析成功</h3>
+                            <p>地址: ${data.geocodes[0].formatted_address}</p>
+                            <p>坐标: ${location}</p>
+                            <p>经度: ${lng}</p>
+                            <p>纬度: ${lat}</p>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `<h3>解析失败</h3><p>状态码: ${data.status}</p><p>错误信息: ${data.info || '无'}</p><p>建议: 尝试使用更完整的地址格式</p>`;
+                    }
+                })
+                .catch(error => {
+                    log('地址解析错误: ' + error);
+                    resultDiv.innerHTML = '<h3>解析错误</h3><p>' + error + '</p><p>可能是网络问题或API Key无效</p>';
+                });
+        }
+        
+        function testNearbySearch() {
+            const resultDiv = document.getElementById('search-result');
+            
+            if (!currentLocation) {
+                resultDiv.innerHTML = '<h3>错误</h3><p>请先解析地址获取坐标</p>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '搜索中...';
+            log('开始搜索附近餐厅，坐标: ' + currentLocation.lng + ',' + currentLocation.lat);
+            
+            const url = `https://restapi.amap.com/v3/place/around?key=${amapKey}&location=${currentLocation.lng},${currentLocation.lat}&radius=500&types=050100&extensions=base`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    log('餐厅搜索结果: ' + JSON.stringify(data, null, 2));
+                    
+                    if (data.status === '1' && data.pois.length > 0) {
+                        let html = '<h3>搜索成功</h3>';
+                        html += '<p>找到 ' + data.pois.length + ' 家餐厅</p>';
+                        html += '<ul>';
+                        
+                        data.pois.forEach((poi, index) => {
+                            html += `<li>${index + 1}. ${poi.name} - ${poi.address || '无地址'} - 距离: ${poi.distance}米</li>`;
+                        });
+                        
+                        html += '</ul>';
+                        resultDiv.innerHTML = html;
+                    } else {
+                        resultDiv.innerHTML = '<h3>搜索失败</h3><p>未找到附近餐厅</p>';
+                    }
+                })
+                .catch(error => {
+                    log('搜索错误: ' + error);
+                    resultDiv.innerHTML = '<h3>搜索错误</h3><p>' + error + '</p>';
+                });
+        }
+        
+        // 页面加载时自动测试
+        window.onload = function() {
+            testGeocode();
+        };
+    </script>
+</body>
+</html>

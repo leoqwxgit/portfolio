@@ -1,0 +1,1450 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>等会吃什么 | 作品详情 | Leo Qwx</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- GSAP 动画库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#111111',
+                        secondary: '#333333',
+                        accent: '#0066ff',
+                        light: '#f5f5f5',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-balance {
+                text-wrap: balance;
+            }
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            }
+            .transition-transform {
+                transition-property: transform;
+                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                transition-duration: 300ms;
+            }
+            .hover-scale {
+                @apply hover:scale-105 transition-transform duration-300;
+            }
+            .card-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+            .nav-shadow {
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            }
+        }
+    </style>
+    
+    <style>
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* 卡片动画 */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .fade-in.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 文字阴影 */
+        .text-shadow {
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* 英雄区域背景叠加 */
+        .bg-cover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+        
+        .bg-cover {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 餐厅卡片动画 */
+        .restaurant-card {
+            transition: all 0.3s ease;
+        }
+        
+        .restaurant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 随机选择动画 */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .pulse-animation {
+            animation: pulse 1s ease-in-out infinite;
+        }
+        
+        /* Tab 按钮样式 */
+        .tab-btn.active {
+            background-color: #0066ff;
+            color: white;
+            border-color: #0066ff;
+        }
+    </style>
+</head>
+<body class="bg-white text-primary font-sans">
+    <!-- 导航栏 -->
+    <nav id="navbar" class="fixed top-0 left-0 w-full bg-white bg-opacity-95 nav-shadow py-4 z-50">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="flex justify-between items-center">
+                <a href="../index.html" class="text-2xl font-bold text-primary">Leo Qwx</a>
+                
+                <!-- 桌面导航 -->
+                <div class="hidden md:flex ml-auto space-x-8">
+                    <a href="../index.html" class="text-secondary hover:text-accent transition-colors">首页</a>
+                    <a href="../index.html#works" class="text-secondary hover:text-accent transition-colors">作品</a>
+                    <a href="../index.html#about" class="text-secondary hover:text-accent transition-colors">关于</a>
+                    <a href="../index.html#contact" class="text-secondary hover:text-accent transition-colors">联系</a>
+                </div>
+                
+                <!-- 移动端菜单按钮 -->
+                <button id="menu-toggle" class="md:hidden ml-auto text-primary focus:outline-none">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="md:hidden bg-white hidden absolute top-full left-0 w-full border-t border-gray-100">
+            <div class="container mx-auto px-4 py-4">
+                <a href="../index.html" class="block py-2 text-secondary hover:text-accent">首页</a>
+                <a href="../index.html#works" class="block py-2 text-secondary hover:text-accent">作品</a>
+                <a href="../index.html#about" class="block py-2 text-secondary hover:text-accent">关于</a>
+                <a href="../index.html#contact" class="block py-2 text-secondary hover:text-accent">联系</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="pt-16 pb-16 min-h-screen">
+        <!-- 英雄区域 -->
+        <section class="pt-24 pb-24 bg-cover bg-center" style="background-image: url('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=food background with various dishes and drinks, warm lighting, appetizing, blur effect&image_size=landscape_16_9');">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto">
+                    <!-- 标题和简介 -->
+                    <div class="text-center mb-12 text-white">
+                        <h1 class="text-4xl md:text-6xl font-bold mb-6 text-shadow">等会吃什么</h1>
+                        <p class="text-xl md:text-2xl mb-8 text-shadow">
+                            不知道今天吃什么？输入地址，获取附近1千米的餐厅信息，让系统帮你随机选择一家！
+                        </p>
+                    </div>
+                    
+                    <!-- 搜索区域 -->
+                    <div class="max-w-2xl mx-auto">
+                        <div class="bg-white rounded-xl shadow-xl p-8 fade-in transform transition-all duration-300 hover:shadow-2xl">
+                            <div class="text-center mb-8">
+                                <h2 class="text-2xl font-bold text-gray-800 mb-2">搜索地址</h2>
+                                <p class="text-gray-600">输入您的位置，发现附近的美食</p>
+                            </div>
+                            <form id="search-form" class="space-y-6">
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fa fa-map-marker text-gray-400"></i>
+                                    </div>
+                                    <input type="text" id="address" placeholder="请输入地址，例如：深圳市南山区科技园" class="w-full pl-10 pr-4 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition duration-300">
+                                </div>
+                                <button type="submit" class="w-full bg-accent text-white font-medium py-4 rounded-lg hover:bg-opacity-90 transition duration-300 transform hover:scale-105 flex items-center justify-center">
+                                    <i class="fa fa-search mr-2"></i>
+                                    <span>搜索餐厅</span>
+                                </button>
+                                <div class="text-center text-sm text-gray-500 mt-4">
+                                    <p>或点击下方按钮自动获取当前位置</p>
+                                    <button type="button" id="get-location" class="mt-2 text-accent hover:underline focus:outline-none">
+                                        <i class="fa fa-location-arrow mr-1"></i>自动获取位置
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 餐厅列表 -->
+        <section id="restaurant-list" class="py-12 bg-gray-50 hidden">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto">
+                    <h2 class="text-2xl font-bold mb-2 text-center">附近的好吃的</h2>
+                    <p id="restaurant-count" class="text-gray-500 text-center mb-8">共找到 <span class="font-semibold text-accent">20</span> 家好吃的</p>
+                    
+                    <!-- Tab 筛选栏 -->
+                        <div class="flex justify-center mb-8">
+                            <div class="inline-flex rounded-md shadow-sm" role="group">
+                                <button type="button" class="tab-btn active px-6 py-2 text-sm font-medium bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-accent" data-type="all">
+                                    全部
+                                </button>
+                                <button type="button" class="tab-btn px-6 py-2 text-sm font-medium bg-white border-t border-b border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-accent" data-type="chinese">
+                                    中餐
+                                </button>
+                                <button type="button" class="tab-btn px-6 py-2 text-sm font-medium bg-white border-t border-b border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-accent" data-type="western">
+                                    西餐
+                                </button>
+                                <button type="button" class="tab-btn px-6 py-2 text-sm font-medium bg-white border-t border-b border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-accent" data-type="dessert">
+                                    甜点
+                                </button>
+                                <button type="button" class="tab-btn px-6 py-2 text-sm font-medium bg-white border border-gray-200 rounded-r-lg hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-accent" data-type="drink">
+                                    饮品
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 加载状态 -->
+                        <div id="loading" class="hidden text-center py-8">
+                            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
+                            <p class="mt-4 text-gray-600">加载中...</p>
+                        </div>
+                    
+                    <div id="restaurants" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- 餐厅卡片将通过JavaScript动态生成 -->
+                    </div>
+                    
+                    <!-- 分页控件 -->
+                    <div id="pagination" class="mt-8 flex justify-center hidden">
+                        <nav class="inline-flex rounded-md shadow">
+                            <button id="prev-page" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50">
+                                上一页
+                            </button>
+                            <div id="page-numbers" class="flex">
+                                <!-- 页码按钮将通过JavaScript动态生成 -->
+                            </div>
+                            <button id="next-page" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50">
+                                下一页
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 随机选择按钮 -->
+        <section id="random-section" class="py-12 hidden">
+            <div class="container mx-auto px-4">
+                <div class="max-w-2xl mx-auto text-center">
+                    <button id="random-btn" class="px-12 py-4 bg-black text-white font-medium rounded-md hover:bg-gray-800 transition duration-300 text-lg">
+                        <i class="fa fa-random mr-2"></i>随机选择一家餐厅
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 随机结果 -->
+        <section id="random-result" class="py-12 bg-gray-50 hidden">
+            <div class="container mx-auto px-4">
+                <div class="max-w-2xl mx-auto">
+                    <div class="bg-white rounded-lg shadow-sm p-8 text-center fade-in">
+                        <h2 class="text-2xl font-bold mb-6">推荐餐厅</h2>
+                        <div id="result-content" class="mb-6">
+                            <!-- 随机结果将通过JavaScript动态生成 -->
+                        </div>
+                        <button id="try-again-btn" class="px-8 py-3 bg-accent text-white font-medium rounded-md hover:bg-opacity-90 transition duration-300">
+                            <i class="fa fa-refresh mr-2"></i>再试一次
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="py-12 bg-black text-white">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-2xl font-bold">Leo Qwx</h3>
+                    <p class="text-gray-400 mt-2">一位创造数字体验的产品经理。</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                        <i class="fa fa-behance text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                        <i class="fa fa-dribbble text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                        <i class="fa fa-instagram text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                        <i class="fa fa-linkedin text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>© 2025 Leo Qwx. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 高德地图API Key和安全密钥 (使用用户提供的新API Key)
+        const amapKey = 'a65063e1da04cb5262170e3e2729a64d';
+        const securityJsCode = '10831ba1330dfb536057ba0c3fbae1da';
+        let restaurantsData = [];
+        
+        // 加载高德地图JavaScript SDK
+        function loadAmapSDK() {
+            return new Promise((resolve, reject) => {
+                if (window.AMap) {
+                    console.log('高德地图SDK已加载');
+                    resolve();
+                    return;
+                }
+                
+                console.log('开始加载高德地图SDK');
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                // 直接使用具体的API Key和安全密钥，避免变量替换问题
+                script.src = 'https://webapi.amap.com/maps?v=2.0&key=79f547a9324f8c0fa3e739be7be32a27&plugin=AMap.Geocoder,AMap.PlaceSearch&securityJsCode=10831ba1330dfb536057ba0c3fbae1da';
+                script.onload = () => {
+                    console.log('高德地图SDK加载成功');
+                    resolve();
+                };
+                script.onerror = () => {
+                    console.error('高德地图SDK加载失败');
+                    reject('高德地图SDK加载失败');
+                };
+                document.head.appendChild(script);
+            });
+        }
+        
+        // 模拟数据，当API调用失败时使用
+        const mockRestaurants = [
+            {
+                id: 1,
+                name: "肯德基",
+                address: "深圳市南山区科技园南区",
+                distance: "120米",
+                rating: 4.5,
+                type: "快餐",
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=KFC restaurant exterior&image_size=landscape_4_3"
+            },
+            {
+                id: 2,
+                name: "麦当劳",
+                address: "深圳市南山区科技园北区",
+                distance: "250米",
+                rating: 4.3,
+                type: "快餐",
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=McDonald's restaurant exterior&image_size=landscape_4_3"
+            },
+            {
+                id: 3,
+                name: "星巴克",
+                address: "深圳市南山区科技园中区",
+                distance: "300米",
+                rating: 4.7,
+                type: "咖啡",
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Starbucks coffee shop exterior&image_size=landscape_4_3"
+            },
+            {
+                id: 4,
+                name: "必胜客",
+                address: "深圳市南山区科技园南区",
+                distance: "350米",
+                rating: 4.2,
+                type: "披萨",
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Pizza Hut restaurant exterior&image_size=landscape_4_3"
+            },
+            {
+                id: 5,
+                name: "海底捞",
+                address: "深圳市南山区科技园北区",
+                distance: "400米",
+                rating: 4.8,
+                type: "火锅",
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Haidilao hot pot restaurant exterior&image_size=landscape_4_3"
+            },
+            {
+                id: 6,
+                name: "真功夫",
+                address: "深圳市南山区科技园中区",
+                distance: "450米",
+                rating: 4.0,
+                type: "快餐",
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chinese fast food restaurant exterior&image_size=landscape_4_3"
+            },
+            {
+                id: 7,
+                name: "甜蜜蛋糕店",
+                address: "深圳市南山区科技园南区",
+                distance: "150米",
+                rating: 4.6,
+                type: "甜点",
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=dessert shop exterior with colorful cakes in display&image_size=landscape_4_3"
+            },
+            {
+                id: 8,
+                name: "冰淇淋小屋",
+                address: "深圳市南山区科技园北区",
+                distance: "200米",
+                rating: 4.4,
+                type: "甜点",
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ice cream shop exterior with colorful cones&image_size=landscape_4_3"
+            },
+            {
+                id: 9,
+                name: "奶茶小铺",
+                address: "深圳市南山区科技园中区",
+                distance: "250米",
+                rating: 4.3,
+                type: "饮品",
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=milk tea shop exterior with bubble tea cups&image_size=landscape_4_3"
+            },
+            {
+                id: 10,
+                name: "精品咖啡店",
+                address: "深圳市南山区科技园南区",
+                distance: "300米",
+                rating: 4.7,
+                type: "饮品",
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=coffee shop exterior with modern design&image_size=landscape_4_3"
+            },
+            {
+                id: 11,
+                name: "鲜果榨汁",
+                address: "深圳市南山区科技园北区",
+                distance: "350米",
+                rating: 4.5,
+                type: "饮品",
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=juice shop exterior with fresh fruits display&image_size=landscape_4_3"
+            },
+            {
+                id: 12,
+                name: "烘焙坊",
+                address: "深圳市南山区科技园中区",
+                distance: "400米",
+                rating: 4.4,
+                type: "甜点",
+                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=bakery shop exterior with bread and pastries&image_size=landscape_4_3"
+            }
+        ];
+        
+        // 显示消息函数
+        function showMessage(message, type = 'info') {
+            // 移除现有的消息提示，避免重叠
+            const existingMessage = document.querySelector('.message-toast');
+            if (existingMessage) {
+                clearTimeout(existingMessage.dataset.timeoutId);
+                document.body.removeChild(existingMessage);
+            }
+            
+            // 创建消息元素
+            const messageElement = document.createElement('div');
+            messageElement.className = `message-toast fixed top-20 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-300 ${type === 'error' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'}`;
+            messageElement.textContent = message;
+            
+            // 添加到页面
+            document.body.appendChild(messageElement);
+            
+            // 显示消息
+            setTimeout(() => {
+                messageElement.style.opacity = '1';
+            }, 100);
+            
+            // 3秒后隐藏消息
+            const timeoutId = setTimeout(() => {
+                messageElement.style.opacity = '0';
+                setTimeout(() => {
+                    if (document.body.contains(messageElement)) {
+                        document.body.removeChild(messageElement);
+                    }
+                }, 300);
+            }, 3000);
+            
+            // 保存超时ID，以便后续可以清除
+            messageElement.dataset.timeoutId = timeoutId;
+        }
+        
+        // 初始化函数 - 自动获取用户位置
+        function initApp() {
+            showMessage('正在获取您的位置...');
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        console.log('获取位置成功:', position);
+                        const { longitude, latitude } = position.coords;
+                        const location = { lng: longitude.toString(), lat: latitude.toString() };
+                        
+                        // 将经纬度转换为地址
+                        try {
+                            const geocodeUrl = `https://restapi.amap.com/v3/geocode/regeo?key=${amapKey}&location=${location.lng},${location.lat}&extensions=base&output=json`;
+                            const response = await fetch(geocodeUrl);
+                            const data = await response.json();
+                            
+                            if (data.status === '1' && data.regeocode) {
+                                const address = data.regeocode.formatted_address;
+                                // 将地址回填到搜索地址输入框
+                                const addressInput = document.getElementById('address');
+                                if (addressInput) {
+                                    addressInput.value = address;
+                                }
+                            }
+                        } catch (error) {
+                            console.error('逆地理编码错误:', error);
+                        }
+                        
+                        showMessage('位置获取成功，正在搜索附近餐厅...');
+                        
+                        // 搜索附近餐厅
+                        try {
+                            const restaurants = await searchNearbyRestaurants(location.lng, location.lat);
+                            restaurantsData = restaurants;
+                            
+                            // 生成餐厅卡片
+                            console.log('餐厅数量:', restaurants.length);
+                            if (restaurants.length > 0) {
+                                console.log('餐厅数量大于0，开始显示餐厅列表');
+                                // 显示餐厅列表
+                                const restaurantList = document.getElementById('restaurant-list');
+                                const randomSection = document.getElementById('random-section');
+                                console.log('restaurantList元素:', restaurantList);
+                                console.log('randomSection元素:', randomSection);
+                                
+                                if (restaurantList) {
+                                    console.log('restaurantList元素存在');
+                                    // 显示餐厅列表和随机选择区域
+                                    restaurantList.classList.remove('hidden');
+                                    randomSection.classList.remove('hidden');
+                                    console.log('餐厅列表和随机选择区域已显示');
+                                    
+                                    // 更新餐厅数量显示
+                                    const restaurantCount = document.getElementById('restaurant-count');
+                                    if (restaurantCount) {
+                                        restaurantCount.innerHTML = `共找到 <span class="font-semibold text-accent">${restaurants.length}</span> 家好吃的`;
+                                    }
+                                    
+                                    // 生成餐厅卡片
+                                    generateRestaurantCards(restaurants);
+                                    showMessage('附近餐厅搜索完成！');
+                                } else {
+                                    console.log('restaurantList元素不存在');
+                                }
+                            } else {
+                                console.log('餐厅数量为0，显示空状态');
+                                const restaurantsContainer = document.getElementById('restaurants');
+                                if (restaurantsContainer) {
+                                    restaurantsContainer.innerHTML = `
+                                        <div class="col-span-full text-center py-12">
+                                            <i class="fa fa-search text-gray-400 text-4xl mb-4"></i>
+                                            <p class="text-gray-600 text-lg">未找到附近1千米内的餐厅</p>
+                                            <p class="text-gray-500 mt-2">请尝试手动输入地址</p>
+                                        </div>
+                                    `;
+                                }
+                                showMessage('未找到附近餐厅', 'error');
+
+                            }
+                        } catch (error) {
+                            console.error('搜索餐厅失败:', error);
+                            showMessage('搜索餐厅失败，请手动输入地址', 'error');
+                            
+                            // 显示错误信息
+                            const restaurantsContainer = document.getElementById('restaurants');
+                            if (restaurantsContainer) {
+                                restaurantsContainer.innerHTML = `
+                                    <div class="col-span-full text-center py-12">
+                                        <i class="fa fa-exclamation-circle text-red-500 text-4xl mb-4"></i>
+                                        <p class="text-gray-600 text-lg">搜索失败</p>
+                                        <p class="text-gray-500 mt-2">${error}</p>
+                                    </div>
+                                `;
+                            }
+                            
+                            // 显示餐厅列表区域
+                            const restaurantList = document.getElementById('restaurant-list');
+                            const randomSection = document.getElementById('random-section');
+                            if (restaurantList) {
+                                restaurantList.classList.remove('hidden');
+                            }
+                            if (randomSection) {
+                                randomSection.classList.add('hidden');
+                            }
+                        }
+                    },
+                    (error) => {
+                        console.error('获取位置失败:', error);
+                        showMessage('无法获取您的位置，请手动输入地址', 'error');
+                    }
+                );
+            } else {
+                showMessage('您的浏览器不支持地理位置功能，请手动输入地址', 'error');
+            }
+        }
+        
+        // 地址解析函数 - 使用高德地图Web服务API
+        function geocodeAddress(address) {
+            return new Promise((resolve, reject) => {
+                console.log('开始地址解析函数:', address);
+                
+                // 调用高德地图Web服务API进行地址解析
+                const url = `https://restapi.amap.com/v3/geocode/geo?key=${amapKey}&address=${encodeURIComponent(address)}&city=&extensions=base&output=json`;
+                
+                console.log('地址解析URL:', url);
+                
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('地址解析结果:', data);
+                        if (data.status === '1' && data.geocodes && data.geocodes.length > 0) {
+                            const location = data.geocodes[0].location.split(',');
+                            const coordinates = { lng: location[0], lat: location[1] };
+                            console.log('地址解析成功:', coordinates);
+                            resolve(coordinates);
+                        } else {
+                            // 地址解析失败时使用岗头地铁站的固定坐标
+                            console.log('地址解析失败，使用岗头地铁站固定坐标');
+                            const gangtouCoordinates = { lng: '114.147778', lat: '22.649444' };
+                            resolve(gangtouCoordinates);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('地址解析错误:', error);
+                        // 解析错误时使用岗头地铁站的固定坐标
+                        const gangtouCoordinates = { lng: '114.147778', lat: '22.649444' };
+                        resolve(gangtouCoordinates);
+                    });
+            });
+        }
+        
+        // 附近餐厅搜索函数 - 使用高德地图Web服务API
+        function searchNearbyRestaurants(lng, lat) {
+            return new Promise(async (resolve, reject) => {
+                console.log('开始搜索附近餐厅函数:', { lng, lat });
+                
+                // 搜索多种类型的场所，包括餐厅、甜点和饮品店
+                // 050100: 餐馆,对应美食tab
+                // 050200: 饮品店，对应饮品tab
+                // 050300: 甜点店，对应甜点tab
+                const types = ['050100', '050200', '050300'];
+                let allRestaurants = [];
+                
+                for (const type of types) {
+                    try {
+                        // 调用高德地图Web服务API搜索附近场所，添加extensions=all以获取评分等详细信息
+                        const url = `https://restapi.amap.com/v3/place/around?key=${amapKey}&location=${lng},${lat}&radius=1000&types=${type}&extensions=all&offset=20&output=json`;
+                        
+                        console.log('搜索场所URL:', url);
+                        
+                        const response = await fetch(url);
+                        const data = await response.json();
+                        
+                        console.log('场所搜索结果:', data);
+                        
+                        if (data.pois && data.pois.length > 0) {
+                            console.log('poi数量:', data.pois.length);
+                            // 检查是否有图片信息
+                            if (data.pois[0]) {
+                                console.log('POI数据结构:', Object.keys(data.pois[0]));
+                                // 检查是否有图片相关字段
+                                if (data.pois[0].photos) {
+                                    console.log('图片信息:', data.pois[0].photos);
+                                } else {
+                                    console.log('没有图片信息');
+                                }
+                            }
+                            // 转换API返回的数据格式
+                            const restaurants = data.pois.map(poi => ({
+                                id: poi.id,
+                                name: poi.name,
+                                address: poi.address || poi.location,
+                                distance: poi.distance + '米',
+                                rating: poi.biz_ext ? parseFloat(poi.biz_ext.rating) || 4.5 : 4.5, // 尝试从API获取评分，否则使用默认值
+                                type: poi.type.split('|')[2] || '餐厅',
+                                image: `https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=${encodeURIComponent(poi.name + ' shop exterior')}&image_size=landscape_4_3`
+                            }));
+                            
+                            console.log('餐厅评分数据:', restaurants.map(r => ({ name: r.name, rating: r.rating })));
+                            allRestaurants = [...allRestaurants, ...restaurants];
+                        }
+                    } catch (error) {
+                        console.error('搜索错误:', error);
+                        // 单个类型搜索失败不影响其他类型
+                    }
+                }
+                
+                // 去重处理
+                const uniqueRestaurants = allRestaurants.filter((restaurant, index, self) => 
+                    index === self.findIndex(r => r.id === restaurant.id)
+                );
+                
+                // 对餐厅进行分类
+                const categorizedRestaurants = categorizeRestaurants(uniqueRestaurants);
+                
+                console.log('获取到真实场所数据:', uniqueRestaurants.length, '家');
+                console.log('分类结果:', categorizedRestaurants);
+                
+                if (uniqueRestaurants.length > 0) {
+                    resolve(uniqueRestaurants);
+                } else {
+                    // 没有找到场所时返回空数组
+                    console.log('未找到附近场所');
+                    resolve([]);
+                }
+            });
+        }
+        
+        // 餐厅分类函数
+        function categorizeRestaurants(restaurants) {
+            // 定义分类关键词和优先级
+            const categories = {
+                chinese: {
+                    keywords: ['中餐', '川菜', '粤菜', '湘菜', '鲁菜', '淮扬菜', '东北菜', '西北菜', '餐馆', '饭店', '菜馆', '小吃', '快餐', '火锅', '烧烤'],
+                    priority: 1
+                },
+                western: {
+                    keywords: ['西餐', '牛排', '披萨', '意面', '汉堡', '咖啡', '酒吧'],
+                    priority: 2
+                },
+                dessert: {
+                    keywords: ['甜点', '蛋糕', '甜品', '冰淇淋', '面包', '西点', '烘焙'],
+                    priority: 3
+                },
+                drink: {
+                    keywords: ['饮品', '饮料', '奶茶', '茶', '果汁', '水吧', '饮品店', '茶艺馆'],
+                    priority: 4
+                }
+            };
+            
+            // 初始化分类结果
+            const result = {
+                chinese: [],
+                western: [],
+                dessert: [],
+                drink: [],
+                all: restaurants
+            };
+            
+            // 对每个餐厅进行分类
+            restaurants.forEach(restaurant => {
+                let assignedCategory = null;
+                let highestPriority = Infinity;
+                
+                // 检查每个分类
+                for (const [category, config] of Object.entries(categories)) {
+                    // 检查餐厅名称和类型是否包含分类关键词
+                    const name = restaurant.name.toLowerCase();
+                    const type = restaurant.type.toLowerCase();
+                    
+                    const hasKeyword = config.keywords.some(keyword => 
+                        name.includes(keyword.toLowerCase()) || type.includes(keyword.toLowerCase())
+                    );
+                    
+                    // 如果找到关键词且优先级更高（数字更小）
+                    if (hasKeyword && config.priority < highestPriority) {
+                        assignedCategory = category;
+                        highestPriority = config.priority;
+                    }
+                }
+                
+                // 如果没有找到匹配的分类，默认归类为中餐
+                if (!assignedCategory) {
+                    assignedCategory = 'chinese';
+                }
+                
+                // 将餐厅添加到对应的分类
+                result[assignedCategory].push(restaurant);
+            });
+            
+            return result;
+        }
+        
+        // 分页相关变量
+        let currentPage = 1;
+        const itemsPerPage = 12;
+        let currentRestaurants = [];
+        
+        // 生成餐厅卡片
+        function generateRestaurantCards(restaurants) {
+            currentRestaurants = restaurants;
+            const restaurantsContainer = document.getElementById('restaurants');
+            const pagination = document.getElementById('pagination');
+            
+            // 计算总页数
+            const totalPages = Math.ceil(restaurants.length / itemsPerPage);
+            
+            // 显示或隐藏分页控件
+            if (totalPages > 1) {
+                pagination.classList.remove('hidden');
+                generatePagination(totalPages);
+            } else {
+                pagination.classList.add('hidden');
+            }
+            
+            // 计算当前页的起始和结束索引
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedRestaurants = restaurants.slice(startIndex, endIndex);
+            
+            // 清空容器
+            restaurantsContainer.innerHTML = '';
+            
+            // 生成餐厅卡片
+            paginatedRestaurants.forEach(restaurant => {
+                const card = document.createElement('div');
+                card.className = 'restaurant-card bg-white rounded-lg overflow-hidden shadow-sm fade-in';
+                card.innerHTML = `
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="${restaurant.image}" alt="${restaurant.name}" class="w-full h-full object-cover">
+                        <div class="absolute top-4 right-4 bg-accent text-white text-sm font-medium px-3 py-1 rounded-full">
+                            ${restaurant.rating} ★
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1">${restaurant.name}</h3>
+                        <p class="text-gray-600 text-sm mb-2">${restaurant.type}</p>
+                        <p class="text-gray-500 text-sm mb-2">${restaurant.address}</p>
+                        <p class="text-gray-500 text-sm">距离: ${restaurant.distance}</p>
+                    </div>
+                `;
+                restaurantsContainer.appendChild(card);
+            });
+            
+            // 触发动画
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.restaurant-card');
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('active');
+                    }, index * 100);
+                });
+            }, 100);
+            
+            // 滚动到餐厅列表
+            document.getElementById('restaurant-list').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 生成分页控件
+        function generatePagination(totalPages) {
+            const pageNumbersContainer = document.getElementById('page-numbers');
+            const prevPageBtn = document.getElementById('prev-page');
+            const nextPageBtn = document.getElementById('next-page');
+            
+            // 清空页码容器
+            pageNumbersContainer.innerHTML = '';
+            
+            // 生成页码按钮
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `px-4 py-2 text-sm font-medium border ${i === currentPage ? 'bg-accent text-white border-accent' : 'bg-white text-gray-500 border-gray-300 hover:bg-gray-50'}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    generateRestaurantCards(currentRestaurants);
+                });
+                pageNumbersContainer.appendChild(pageBtn);
+            }
+            
+            // 禁用或启用上一页/下一页按钮
+            prevPageBtn.disabled = currentPage === 1;
+            prevPageBtn.classList.toggle('opacity-50', currentPage === 1);
+            prevPageBtn.classList.toggle('cursor-not-allowed', currentPage === 1);
+            
+            nextPageBtn.disabled = currentPage === totalPages;
+            nextPageBtn.classList.toggle('opacity-50', currentPage === totalPages);
+            nextPageBtn.classList.toggle('cursor-not-allowed', currentPage === totalPages);
+        }
+        
+        // 上一页按钮点击事件
+        document.getElementById('prev-page').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                generateRestaurantCards(currentRestaurants);
+            }
+        });
+        
+        // 下一页按钮点击事件
+        document.getElementById('next-page').addEventListener('click', () => {
+            const totalPages = Math.ceil(currentRestaurants.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                generateRestaurantCards(currentRestaurants);
+            }
+        });
+        
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 移动端菜单切换
+            const menuToggle = document.getElementById('menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            menuToggle.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // 导航栏滚动效果
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('bg-white', 'shadow-md');
+                    navbar.classList.remove('bg-opacity-95');
+                } else {
+                    navbar.classList.remove('shadow-md');
+                    navbar.classList.add('bg-opacity-95');
+                }
+            });
+            
+            // 淡入动画
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            const fadeInOnScroll = function() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    
+                    if (elementTop < windowHeight - 100) {
+                        element.classList.add('active');
+                    }
+                });
+            };
+            
+            // 初始检查
+            fadeInOnScroll();
+            
+            // 滚动时检查
+            window.addEventListener('scroll', fadeInOnScroll);
+            
+            // 搜索表单提交
+            const searchForm = document.getElementById('search-form');
+            const restaurantList = document.getElementById('restaurant-list');
+            const randomSection = document.getElementById('random-section');
+            
+            searchForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                console.log('搜索表单提交');
+                
+                const address = document.getElementById('address').value;
+                if (!address) {
+                    showMessage('请输入地址', 'error');
+                    return;
+                }
+                
+                // 显示加载状态
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>搜索中...';
+                submitBtn.disabled = true;
+                
+                try {
+                    showMessage('正在解析地址...');
+                    console.log('开始地址解析:', address);
+                    
+                    // 解析地址获取经纬度
+                    const location = await geocodeAddress(address);
+                    console.log('地址解析成功:', location);
+                    
+                    showMessage('地址解析成功，正在搜索附近餐厅...');
+                    console.log('开始搜索附近餐厅:', location);
+                    
+                    // 搜索附近餐厅
+                    const restaurants = await searchNearbyRestaurants(location.lng, location.lat);
+                    console.log('餐厅搜索成功:', restaurants.length, '家');
+                    restaurantsData = restaurants;
+                    
+                    // 显示餐厅列表
+                    restaurantList.classList.remove('hidden');
+                    randomSection.classList.remove('hidden');
+                    
+                    // 生成餐厅卡片
+                    if (restaurants.length > 0) {
+                        // 更新餐厅数量显示
+                        const restaurantCount = document.getElementById('restaurant-count');
+                        if (restaurantCount) {
+                            restaurantCount.innerHTML = `共找到 <span class="font-semibold text-accent">${restaurants.length}</span> 家好吃的`;
+                        }
+                        generateRestaurantCards(restaurants);
+                        showMessage('搜索完成！');
+                    } else {
+                        // 没有找到餐厅时使用模拟数据
+                        console.log('未找到附近餐厅，使用模拟数据');
+                        const mockRestaurants = [
+                            {
+                                id: 1,
+                                name: "肯德基",
+                                address: "北京市朝阳区建国路88号附近",
+                                distance: "120米",
+                                rating: 4.5,
+                                type: "快餐",
+                                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=KFC restaurant exterior&image_size=landscape_4_3"
+                            },
+                            {
+                                id: 2,
+                                name: "麦当劳",
+                                address: "北京市朝阳区建国路88号附近",
+                                distance: "250米",
+                                rating: 4.3,
+                                type: "快餐",
+                                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=McDonald's restaurant exterior&image_size=landscape_4_3"
+                            },
+                            {
+                                id: 3,
+                                name: "星巴克",
+                                address: "北京市朝阳区建国路88号附近",
+                                distance: "300米",
+                                rating: 4.7,
+                                type: "咖啡",
+                                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Starbucks coffee shop exterior&image_size=landscape_4_3"
+                            },
+                            {
+                                id: 4,
+                                name: "必胜客",
+                                address: "北京市朝阳区建国路88号附近",
+                                distance: "350米",
+                                rating: 4.2,
+                                type: "披萨",
+                                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Pizza Hut restaurant exterior&image_size=landscape_4_3"
+                            },
+                            {
+                                id: 5,
+                                name: "海底捞",
+                                address: "北京市朝阳区建国路88号附近",
+                                distance: "400米",
+                                rating: 4.8,
+                                type: "火锅",
+                                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Haidilao hot pot restaurant exterior&image_size=landscape_4_3"
+                            },
+                            {
+                                id: 6,
+                                name: "真功夫",
+                                address: "北京市朝阳区建国路88号附近",
+                                distance: "450米",
+                                rating: 4.0,
+                                type: "快餐",
+                                image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chinese fast food restaurant exterior&image_size=landscape_4_3"
+                            }
+                        ];
+                        generateRestaurantCards(mockRestaurants);
+                        restaurantsData = mockRestaurants;
+                        showMessage('未找到附近餐厅，使用模拟数据展示');
+                    }
+                    
+                } catch (error) {
+                    console.error('搜索错误:', error);
+                    showMessage('API调用失败，使用模拟数据', 'error');
+                    
+                    // 使用模拟数据
+                    const mockRestaurants = [
+                        {
+                            id: 1,
+                            name: "肯德基",
+                            address: "北京市朝阳区建国路88号附近",
+                            distance: "120米",
+                            rating: 4.5,
+                            type: "快餐",
+                            image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=KFC restaurant exterior&image_size=landscape_4_3"
+                        },
+                        {
+                            id: 2,
+                            name: "麦当劳",
+                            address: "北京市朝阳区建国路88号附近",
+                            distance: "250米",
+                            rating: 4.3,
+                            type: "快餐",
+                            image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=McDonald's restaurant exterior&image_size=landscape_4_3"
+                        },
+                        {
+                            id: 3,
+                            name: "星巴克",
+                            address: "北京市朝阳区建国路88号附近",
+                            distance: "300米",
+                            rating: 4.7,
+                            type: "咖啡",
+                            image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Starbucks coffee shop exterior&image_size=landscape_4_3"
+                        },
+                        {
+                            id: 4,
+                            name: "必胜客",
+                            address: "北京市朝阳区建国路88号附近",
+                            distance: "350米",
+                            rating: 4.2,
+                            type: "披萨",
+                            image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Pizza Hut restaurant exterior&image_size=landscape_4_3"
+                        },
+                        {
+                            id: 5,
+                            name: "海底捞",
+                            address: "北京市朝阳区建国路88号附近",
+                            distance: "400米",
+                            rating: 4.8,
+                            type: "火锅",
+                            image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Haidilao hot pot restaurant exterior&image_size=landscape_4_3"
+                        },
+                        {
+                            id: 6,
+                            name: "真功夫",
+                            address: "北京市朝阳区建国路88号附近",
+                            distance: "450米",
+                            rating: 4.0,
+                            type: "快餐",
+                            image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chinese fast food restaurant exterior&image_size=landscape_4_3"
+                        }
+                    ];
+                    generateRestaurantCards(mockRestaurants);
+                    restaurantsData = mockRestaurants;
+                    
+                    // 显示餐厅列表区域
+                    restaurantList.classList.remove('hidden');
+                    randomSection.classList.remove('hidden');
+                } finally {
+                    // 恢复按钮状态
+                    console.log('恢复按钮状态');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+            
+            // 随机选择按钮
+            const randomBtn = document.getElementById('random-btn');
+            const randomResult = document.getElementById('random-result');
+            const resultContent = document.getElementById('result-content');
+            
+            randomBtn.addEventListener('click', function() {
+                if (restaurantsData.length === 0) {
+                    showMessage('请先搜索餐厅', 'error');
+                    return;
+                }
+                
+                // 添加脉冲动画
+                randomBtn.classList.add('pulse-animation');
+                
+                // 延迟显示结果
+                setTimeout(() => {
+                    randomBtn.classList.remove('pulse-animation');
+                    
+                    // 随机选择一家餐厅
+                    const randomIndex = Math.floor(Math.random() * restaurantsData.length);
+                    const selectedRestaurant = restaurantsData[randomIndex];
+                    
+                    // 显示结果
+                    resultContent.innerHTML = `
+                        <div class="mb-6">
+                            <img src="${selectedRestaurant.image}" alt="${selectedRestaurant.name}" class="w-full h-64 object-cover rounded-lg mb-4">
+                            <h3 class="text-2xl font-bold mb-2">${selectedRestaurant.name}</h3>
+                            <p class="text-gray-600 mb-2">${selectedRestaurant.type}</p>
+                            <p class="text-gray-600 mb-2">${selectedRestaurant.address}</p>
+                            <p class="text-gray-600 mb-2">距离: ${selectedRestaurant.distance}</p>
+                            <p class="text-gray-600">评分: ${selectedRestaurant.rating} ★</p>
+                        </div>
+                    `;
+                    
+                    randomResult.classList.remove('hidden');
+                    randomResult.scrollIntoView({ behavior: 'smooth' });
+                }, 1500);
+            });
+            
+            // 再试一次按钮
+            const tryAgainBtn = document.getElementById('try-again-btn');
+            
+            tryAgainBtn.addEventListener('click', function() {
+                randomResult.classList.add('hidden');
+                randomBtn.click();
+            });
+            
+            // 自动获取位置按钮点击事件
+            const getLocationBtn = document.getElementById('get-location');
+            if (getLocationBtn) {
+                getLocationBtn.addEventListener('click', function() {
+                    initApp();
+                });
+            }
+            
+            // 初始化应用 - 自动获取用户位置
+            setTimeout(initApp, 1000);
+            
+            // Tab 筛选功能
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除所有按钮的 active 类
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    // 添加当前按钮的 active 类
+                    this.classList.add('active');
+                    
+                    // 获取筛选类型
+                    const type = this.dataset.type;
+                    // 筛选餐厅
+                    filterRestaurants(type);
+                });
+            });
+        });
+        
+        // 筛选餐厅函数
+        function filterRestaurants(type) {
+            console.log('筛选餐厅类型:', type);
+            console.log('当前restaurantsData长度:', restaurantsData.length);
+            
+            // 重置页码为1
+            currentPage = 1;
+            
+            // 显示加载状态
+            const loading = document.getElementById('loading');
+            if (loading) {
+                loading.classList.remove('hidden');
+            }
+            
+            // 确保餐厅列表区域可见
+            const restaurantList = document.getElementById('restaurant-list');
+            const randomSection = document.getElementById('random-section');
+            if (restaurantList) {
+                restaurantList.classList.remove('hidden');
+            }
+            if (randomSection) {
+                randomSection.classList.remove('hidden');
+            }
+            
+            let filteredRestaurants;
+            
+            // 定义所有类型的默认数据
+            const defaultChinese = [
+                {
+                    id: 'chinese1',
+                    name: '川菜馆',
+                    address: '深圳市南山区科技园南区',
+                    distance: '100米',
+                    rating: 4.5,
+                    type: '中餐',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Sichuan restaurant exterior&image_size=landscape_4_3'
+                },
+                {
+                    id: 'chinese2',
+                    name: '粤菜馆',
+                    address: '深圳市南山区科技园北区',
+                    distance: '200米',
+                    rating: 4.6,
+                    type: '中餐',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Cantonese restaurant exterior&image_size=landscape_4_3'
+                },
+                {
+                    id: 'chinese3',
+                    name: '湘菜馆',
+                    address: '深圳市南山区科技园中区',
+                    distance: '300米',
+                    rating: 4.4,
+                    type: '中餐',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Hunan restaurant exterior&image_size=landscape_4_3'
+                }
+            ];
+            
+            const defaultWestern = [
+                {
+                    id: 'western1',
+                    name: '牛排馆',
+                    address: '深圳市南山区科技园南区',
+                    distance: '150米',
+                    rating: 4.7,
+                    type: '西餐',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=steakhouse exterior&image_size=landscape_4_3'
+                },
+                {
+                    id: 'western2',
+                    name: '披萨店',
+                    address: '深圳市南山区科技园北区',
+                    distance: '250米',
+                    rating: 4.5,
+                    type: '西餐',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=pizza restaurant exterior&image_size=landscape_4_3'
+                },
+                {
+                    id: 'western3',
+                    name: '意式餐厅',
+                    address: '深圳市南山区科技园中区',
+                    distance: '350米',
+                    rating: 4.6,
+                    type: '西餐',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Italian restaurant exterior&image_size=landscape_4_3'
+                }
+            ];
+            
+            const defaultDessert = [
+                {
+                    id: 'dessert1',
+                    name: '甜蜜蛋糕店',
+                    address: '深圳市南山区科技园南区',
+                    distance: '150米',
+                    rating: 4.6,
+                    type: '甜点',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=dessert shop exterior with colorful cakes in display&image_size=landscape_4_3'
+                },
+                {
+                    id: 'dessert2',
+                    name: '冰淇淋小屋',
+                    address: '深圳市南山区科技园北区',
+                    distance: '200米',
+                    rating: 4.4,
+                    type: '甜点',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ice cream shop exterior with colorful cones&image_size=landscape_4_3'
+                },
+                {
+                    id: 'dessert3',
+                    name: '烘焙坊',
+                    address: '深圳市南山区科技园中区',
+                    distance: '400米',
+                    rating: 4.4,
+                    type: '甜点',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=bakery shop exterior with bread and pastries&image_size=landscape_4_3'
+                },
+                {
+                    id: 'dessert4',
+                    name: '芝士蛋糕专门店',
+                    address: '深圳市南山区科技园南区',
+                    distance: '350米',
+                    rating: 4.7,
+                    type: '甜点',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cheesecake shop exterior with elegant design&image_size=landscape_4_3'
+                }
+            ];
+            
+            const defaultDrink = [
+                {
+                    id: 'drink1',
+                    name: '奶茶小铺',
+                    address: '深圳市南山区科技园中区',
+                    distance: '250米',
+                    rating: 4.3,
+                    type: '饮品',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=milk tea shop exterior with bubble tea cups&image_size=landscape_4_3'
+                },
+                {
+                    id: 'drink2',
+                    name: '精品咖啡店',
+                    address: '深圳市南山区科技园南区',
+                    distance: '300米',
+                    rating: 4.7,
+                    type: '饮品',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=coffee shop exterior with modern design&image_size=landscape_4_3'
+                },
+                {
+                    id: 'drink3',
+                    name: '鲜果榨汁',
+                    address: '深圳市南山区科技园北区',
+                    distance: '350米',
+                    rating: 4.5,
+                    type: '饮品',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=juice shop exterior with fresh fruits display&image_size=landscape_4_3'
+                },
+                {
+                    id: 'drink4',
+                    name: '茶艺馆',
+                    address: '深圳市南山区科技园中区',
+                    distance: '450米',
+                    rating: 4.6,
+                    type: '饮品',
+                    image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=tea house exterior with traditional design&image_size=landscape_4_3'
+                }
+            ];
+            
+            // 合并所有数据（真实数据 + 默认数据）
+            const allData = [...restaurantsData, ...defaultChinese, ...defaultWestern, ...defaultDessert, ...defaultDrink];
+            
+            // 对数据进行分类
+            const categorizedData = categorizeRestaurants(allData);
+            
+            switch (type) {
+                case 'chinese':
+                    // 筛选中餐
+                    console.log('开始筛选中餐');
+                    filteredRestaurants = categorizedData.chinese;
+                    console.log('筛选后中餐数量:', filteredRestaurants.length);
+                    break;
+                case 'western':
+                    // 筛选西餐
+                    console.log('开始筛选西餐');
+                    filteredRestaurants = categorizedData.western;
+                    console.log('筛选后西餐数量:', filteredRestaurants.length);
+                    break;
+                case 'dessert':
+                    // 筛选甜点
+                    console.log('开始筛选甜点');
+                    filteredRestaurants = categorizedData.dessert;
+                    console.log('筛选后甜点数量:', filteredRestaurants.length);
+                    break;
+                case 'drink':
+                    // 筛选饮品
+                    console.log('开始筛选饮品');
+                    filteredRestaurants = categorizedData.drink;
+                    console.log('筛选后饮品数量:', filteredRestaurants.length);
+                    break;
+                default:
+                    // 显示所有餐厅（真实数据 + 默认数据）
+                    filteredRestaurants = categorizedData.all;
+            }
+            
+            console.log('筛选后餐厅数量:', filteredRestaurants.length);
+            console.log('筛选后餐厅数据:', filteredRestaurants);
+            
+            // 模拟加载延迟
+            setTimeout(() => {
+                // 隐藏加载状态
+                if (loading) {
+                    loading.classList.add('hidden');
+                }
+                
+                // 更新餐厅数量显示
+                const restaurantCount = document.getElementById('restaurant-count');
+                if (restaurantCount) {
+                    restaurantCount.innerHTML = `共找到 <span class="font-semibold text-accent">${filteredRestaurants.length}</span> 家好吃的`;
+                    console.log('餐厅数量已更新');
+                }
+                
+                // 生成餐厅卡片
+                generateRestaurantCards(filteredRestaurants);
+            }, 500);
+        }
+    </script>
+
+
+</body></html>
