@@ -452,7 +452,7 @@
     </footer>
 
     <!-- 回到顶部按钮 -->
-    <button id="back-to-top" class="fixed bottom-8 right-8 bg-black text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg opacity-0 invisible transition-all duration-300">
+    <button id="back-to-top" class="fixed bottom-8 left-8 bg-black text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg opacity-0 invisible transition-all duration-300">
         <i class="fa fa-arrow-up"></i>
     </button>
 
@@ -605,5 +605,24 @@
         });
     </script>
 
+    <!-- 扣子智能体 -->
+    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
+    <script>
+      new CozeWebSDK.WebChatClient({
+        config: {
+          bot_id: '7629379469874528291',
+        },
+        componentProps: {
+          title: 'Coze',
+        },
+        auth: {
+          type: 'token',
+          token: 'pat_4WrA1VLYxSmjAKgscAwM8NG8J5zWGnF63TbrDIRhE34BDsAT61GhgHQIJdbIRVvB',
+          onRefreshToken: function () {
+            return 'pat_4WrA1VLYxSmjAKgscAwM8NG8J5zWGnF63TbrDIRhE34BDsAT61GhgHQIJdbIRVvB'
+          }
+        }
+      });
+    </script>
 
 </body></html>
