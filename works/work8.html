@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>粒子爆炸 | 物理粉碎实验室</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#111111',
+                        secondary: '#333333',
+                        accent: '#0066ff',
+                        light: '#f5f5f5',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .nav-shadow {
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            }
+        }
+    </style>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            overflow: hidden;
+        }
+        
+        canvas {
+            display: block;
+            cursor: crosshair;
+        }
+        
+        .game-info {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: right;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .reset-button {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+        
+        .reset-button:hover {
+            background-color: rgba(0, 212, 255, 0.3);
+        }
+        
+        .word-input {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50px);
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.5);
+            color: #ffffff;
+            padding: 0.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            width: 120px;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .word-input:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+        
+        .color-picker {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .color-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .color-btn:hover {
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .color-btn.active {
+            border-color: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-white text-primary font-sans">
+    <!-- 导航栏 -->
+    <nav id="navbar" class="fixed top-0 left-0 w-full bg-white bg-opacity-95 nav-shadow py-4 z-50">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="flex justify-between items-center">
+                <a href="../index.html" class="text-2xl font-bold text-primary">Leo Qwx</a>
+                
+                <!-- 桌面导航 -->
+                <div class="hidden md:flex ml-auto space-x-8">
+                    <a href="../index.html" class="text-secondary hover:text-accent transition-colors">首页</a>
+                    <a href="../index.html#works" class="text-secondary hover:text-accent transition-colors">项目</a>
+                    <a href="../index.html#vibe-coding" class="text-secondary hover:text-accent transition-colors">Vibe coding实操</a>
+                    <a href="../index.html#about" class="text-secondary hover:text-accent transition-colors">关于</a>
+                    <a href="../index.html#contact" class="text-secondary hover:text-accent transition-colors">联系</a>
+                </div>
+                
+                <!-- 移动端菜单按钮 -->
+                <button id="menu-toggle" class="md:hidden ml-auto text-primary focus:outline-none">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="md:hidden bg-white hidden absolute top-full left-0 w-full border-t border-gray-100">
+            <div class="container mx-auto px-4 py-4">
+                <a href="../index.html" class="block py-2 text-secondary hover:text-accent">首页</a>
+                <a href="../index.html#works" class="block py-2 text-secondary hover:text-accent">项目</a>
+                <a href="../index.html#vibe-coding" class="block py-2 text-secondary hover:text-accent">Vibe coding实操</a>
+                <a href="../index.html#about" class="block py-2 text-secondary hover:text-accent">关于</a>
+                <a href="../index.html#contact" class="block py-2 text-secondary hover:text-accent">联系</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 游戏画布 -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- 游戏信息 -->
+    <div class="game-info">
+        <div>粒子数量: <span id="particleCount">0</span></div>
+        <div>模式: <span id="gameMode">正常</span></div>
+    </div>
+
+    <!-- 控制说明 -->
+    <div class="controls">
+        <div>鼠标移动: 推开粒子</div>
+        <div>鼠标点击: 爆炸效果</div>
+        <div>空格键: 黑洞模式</div>
+    </div>
+
+    <!-- 颜色选择器 -->
+    <div class="color-picker">
+        <div class="color-btn active" style="background-color: #00d4ff;" data-color="#00d4ff"></div>
+        <div class="color-btn" style="background-color: #ff00d4;" data-color="#ff00d4"></div>
+        <div class="color-btn" style="background-color: #d4ff00;" data-color="#d4ff00"></div>
+        <div class="color-btn" style="background-color: #ffffff;" data-color="#ffffff"></div>
+    </div>
+    
+    <!-- 输入框 -->
+    <input type="text" class="word-input" id="wordInput" placeholder="输入文字" maxlength="8">
+    
+    <!-- 重置按钮 -->
+    <button class="reset-button" onclick="resetGame()">重置</button>
+
+    <script>
+        // 获取画布和上下文
+        var canvas = document.getElementById('gameCanvas');
+        var ctx = canvas.getContext('2d');
+        
+        // 设置画布尺寸
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 游戏状态
+        var gameState = {
+            particles: [],
+            mouse: { x: 0, y: 0 },
+            isBlackHole: false,
+            currentColor: '#00d4ff'
+        };
+        
+        // 生成粒子
+        function generateParticles(word = '粒子爆炸') {
+            gameState.particles = [];
+            var centerX = canvas.width / 2;
+            var centerY = canvas.height / 2;
+            
+            // 生成文字粒子
+            var tempCanvas = document.createElement('canvas');
+            var tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            
+            tempCtx.font = '150px Arial';
+            tempCtx.fillStyle = 'white';
+            tempCtx.textAlign = 'center';
+            tempCtx.textBaseline = 'middle';
+            tempCtx.fillText(word, centerX, centerY);
+            
+            var imageData = tempCtx.getImageData(0, 0, canvas.width, canvas.height);
+            var data = imageData.data;
+            
+            for (var y = 0; y < canvas.height; y += 5) {
+                for (var x = 0; x < canvas.width; x += 5) {
+                    var index = (y * canvas.width + x) * 4;
+                    if (data[index] > 100) {
+                        gameState.particles.push({
+                            x: x,
+                            y: y,
+                            vx: 0,
+                            vy: 0,
+                            radius: 2,
+                            color: gameState.currentColor
+                        });
+                    }
+                }
+            }
+            
+            document.getElementById('particleCount').textContent = gameState.particles.length;
+        }
+        
+        // 动画循环
+        function animate() {
+            // 半透明背景
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 更新和绘制粒子
+            for (var i = 0; i < gameState.particles.length; i++) {
+                var p = gameState.particles[i];
+                
+                // 鼠标交互
+                var dx = gameState.mouse.x - p.x;
+                var dy = gameState.mouse.y - p.y;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (gameState.isBlackHole) {
+                    if (dist < 200) { // 黑洞区域扩大一倍
+                        var force = (200 - dist) / 200;
+                        p.vx += (dx / dist) * force * 0.5;
+                        p.vy += (dy / dist) * force * 0.5;
+                    }
+                } else {
+                    if (dist < 100) {
+                        var force = (100 - dist) / 100;
+                        p.vx -= (dx / dist) * force * 0.3;
+                        p.vy -= (dy / dist) * force * 0.3;
+                    }
+                }
+                
+                // 阻尼（轻微）
+                p.vx *= 0.99;
+                p.vy *= 0.99;
+                
+                // 更新位置
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                // 边界碰撞 - 物理反弹
+                if (p.x < p.radius) {
+                    p.x = p.radius;
+                    p.vx = -p.vx * 0.95; // 轻微能量损失
+                }
+                if (p.x > canvas.width - p.radius) {
+                    p.x = canvas.width - p.radius;
+                    p.vx = -p.vx * 0.95;
+                }
+                if (p.y < p.radius) {
+                    p.y = p.radius;
+                    p.vy = -p.vy * 0.95;
+                }
+                if (p.y > canvas.height - p.radius) {
+                    p.y = canvas.height - p.radius;
+                    p.vy = -p.vy * 0.95;
+                }
+                
+                // 绘制粒子
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+                ctx.closePath();
+            }
+            
+            // 更新模式显示
+            document.getElementById('gameMode').textContent = gameState.isBlackHole ? '黑洞' : '正常';
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // 重置游戏
+        function resetGame() {
+            generateParticles();
+        }
+        
+        // 事件监听
+        canvas.addEventListener('mousemove', function(e) {
+            gameState.mouse.x = e.clientX;
+            gameState.mouse.y = e.clientY;
+        });
+        
+        canvas.addEventListener('click', function(e) {
+            // 爆炸效果 - 强化
+            for (var i = 0; i < gameState.particles.length; i++) {
+                var p = gameState.particles[i];
+                var dx = p.x - e.clientX;
+                var dy = p.y - e.clientY;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < 200) {
+                    var force = (200 - dist) / 200 * 15; // 显著增加爆炸力
+                    p.vx += (dx / dist) * force;
+                    p.vy += (dy / dist) * force;
+                }
+            }
+        });
+        
+        // 输入框事件处理
+        document.getElementById('wordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                var newWord = this.value.trim() || '粒子爆炸';
+                generateParticles(newWord);
+                this.blur();
+            }
+        });
+        
+        document.getElementById('wordInput').addEventListener('blur', function() {
+            var newWord = this.value.trim() || '粒子爆炸';
+            generateParticles(newWord);
+        });
+        
+        // 颜色选择器事件处理
+        document.querySelectorAll('.color-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                // 移除所有按钮的active类
+                document.querySelectorAll('.color-btn').forEach(function(b) {
+                    b.classList.remove('active');
+                });
+                // 添加当前按钮的active类
+                this.classList.add('active');
+                // 更新当前颜色
+                gameState.currentColor = this.dataset.color;
+                // 重新生成粒子
+                var currentWord = document.getElementById('wordInput').value.trim() || '粒子爆炸';
+                generateParticles(currentWord);
+            });
+        });
+        
+        window.addEventListener('keydown', function(e) {
+            if (e.code === 'Space') {
+                gameState.isBlackHole = true;
+            }
+        });
+        
+        window.addEventListener('keyup', function(e) {
+            if (e.code === 'Space') {
+                gameState.isBlackHole = false;
+            }
+        });
+        
+        // 初始化
+        resizeCanvas(); // 确保画布尺寸正确
+        generateParticles();
+        animate();
+    </script>
+</body>
+</html>
