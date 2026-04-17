@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <!-- GSAP 动画库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- 懒加载库 -->
+    <script src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script>
     
     <script>
         tailwind.config = {
@@ -170,8 +172,8 @@
         <section class="py-12">
             <div class="container mx-auto px-4">
                 <div class="max-w-5xl mx-auto">
-                    <div class="relative cursor-pointer hover:opacity-90 transition-opacity" onclick="openImageViewer('https://leoqwxgit.github.io/portfolio/assets/images/search-recommendation.png')">
-                        <img src="https://leoqwxgit.github.io/portfolio/assets/images/search-recommendation.png" alt="华为云官网搜索与推荐平台" class="w-full h-auto rounded-lg">
+                    <div class="relative cursor-pointer hover:opacity-90 transition-opacity" onclick="openImageViewer('../assets/images/search-recommendation.png')">
+                        <img src="../assets/images/search-recommendation.png" alt="华为云官网搜索与推荐平台" class="w-full h-auto rounded-lg lazyload">
                         <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300">
                             <span class="px-4 py-2 bg-white text-black text-sm font-medium rounded-md transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 opacity-0 hover:opacity-100">
                                 <i class="fa fa-search-plus mr-2"></i>查看大图
@@ -317,7 +319,7 @@
                     
                     <!-- 相关项目2 -->
                     <div class="work-card bg-white rounded-lg overflow-hidden shadow-sm group fade-in" style="transition-delay: 0.2s;">
-                        <img src="../assets/images/智能体.png" alt="港小宝智能客服" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <img src="../assets/images/agent.png" alt="港小宝智能客服" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="p-4">
                             <h3 class="font-semibold mb-1">港小宝智能客服</h3>
                             <p class="text-gray-600 text-sm mb-3">基于AI技术的智能客服系统，提供高效、专业的客户服务体验。</p>
@@ -327,7 +329,7 @@
                     
                     <!-- 相关项目3 -->
                     <div class="work-card bg-white rounded-lg overflow-hidden shadow-sm group fade-in" style="transition-delay: 0.4s;">
-                        <img src="../assets/images/审批.png" alt="Ai合同审批系统" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <img src="../assets/images/approval.png" alt="Ai合同审批系统" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="p-4">
                             <h3 class="font-semibold mb-1">Ai合同审批系统</h3>
                             <p class="text-gray-600 text-sm mb-3">通过OCR智能识别+信息自动核验+规则化审批的全流程自动化方案。</p>
