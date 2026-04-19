@@ -46,7 +46,7 @@
     </style>
 </head>
 <body class="bg-white text-primary font-sans">
-    <nav id="navbar" class="fixed top-0 left-0 w-full bg-white bg-opacity-95 nav-shadow py-4 z-50">
+    <nav id="navbar" class="fixed top-0 left-0 w-full bg-white bg-opacity-95 nav-shadow py-4 z-50 hidden">
         <div class="container mx-auto px-4 md:px-8">
             <div class="flex justify-between items-center">
                 <a href="../index.html" class="text-2xl font-bold text-primary">Leo Qwx</a>
@@ -76,26 +76,12 @@
         </div>
     </nav>
 
-    <div class="pt-20 min-h-screen">
-        <div class="container mx-auto px-4 md:px-8 py-12">
-            <h1 class="text-4xl font-bold mb-8 text-center">末日之刃-僵尸世界末日</h1>
-            <div class="bg-gray-100 rounded-lg p-8 mb-8">
-                <p class="text-lg mb-4">这是一个僵尸世界末日主题的游戏项目，使用 React 和 Three.js 开发。</p>
-                <p class="text-lg mb-4">游戏特色：</p>
-                <ul class="list-disc list-inside text-lg mb-4">
-                    <li>3D 游戏场景</li>
-                    <li>波次系统（第一波4个敌人，后续每波+2个）</li>
-                    <li>实时战斗系统</li>
-                    <li>健康系统</li>
-                    <li>分数系统</li>
-                </ul>
-                <p class="text-lg">游戏正在开发中，敬请期待！</p>
-            </div>
-            <div class="flex justify-center gap-4">
-                <a href="../index.html" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition-colors">返回主页</a>
-            </div>
-        </div>
+    <div style="padding-top: 0; min-height: 100vh;">
+        <div id="root"></div>
     </div>
+
+    <script type="module" src="assets/game.js"></script>
+    <link rel="stylesheet" href="assets/game.css">
     
     <script>
         var menuToggle = document.getElementById('menu-toggle');
