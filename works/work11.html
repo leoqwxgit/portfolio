@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>僵尸世界末日 | 产品经理作品集</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#111111',
+                        secondary: '#333333',
+                        accent: '#0066ff',
+                        light: '#f5f5f5',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .nav-shadow {
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            }
+        }
+    </style>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-white text-primary font-sans">
+    <nav id="navbar" class="fixed top-0 left-0 w-full bg-white bg-opacity-95 nav-shadow py-4 z-50 hidden">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="flex justify-between items-center">
+                <a href="../index.html" class="text-2xl font-bold text-primary">Leo Qwx</a>
+                
+                <div class="hidden md:flex ml-auto space-x-8">
+                    <a href="../index.html" class="text-secondary hover:text-accent transition-colors">首页</a>
+                    <a href="../index.html#works" class="text-secondary hover:text-accent transition-colors">项目</a>
+                    <a href="../index.html#vibe-coding" class="text-secondary hover:text-accent transition-colors">Vibe coding实操</a>
+                    <a href="../index.html#about" class="text-secondary hover:text-accent transition-colors">关于</a>
+                    <a href="../index.html#contact" class="text-secondary hover:text-accent transition-colors">联系</a>
+                </div>
+                
+                <button id="menu-toggle" class="md:hidden ml-auto text-primary focus:outline-none">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="mobile-menu" class="md:hidden bg-white hidden absolute top-full left-0 w-full border-t border-gray-100">
+            <div class="container mx-auto px-4 py-4">
+                <a href="../index.html" class="block py-2 text-secondary hover:text-accent">首页</a>
+                <a href="../index.html#works" class="block py-2 text-secondary hover:text-accent">项目</a>
+                <a href="../index.html#vibe-coding" class="block py-2 text-secondary hover:text-accent">Vibe coding实操</a>
+                <a href="../index.html#about" class="block py-2 text-secondary hover:text-accent">关于</a>
+                <a href="../index.html#contact" class="block py-2 text-secondary hover:text-accent">联系</a>
+            </div>
+        </div>
+    </nav>
+
+    <div style="padding-top: 0; min-height: 100vh;">
+        <div id="root"></div>
+    </div>
+
+    <script type="module" src="jiangshi1/assets/index-Z_5DIagU.js"></script>
+    <link rel="stylesheet" href="jiangshi1/assets/index-B9H6Tocd.css">
+    
+    <script>
+        var menuToggle = document.getElementById('menu-toggle');
+        var mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
