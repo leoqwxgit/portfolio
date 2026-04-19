@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <title>电商图自动打标工作流 | 产品经理作品集</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#111111',
+                        secondary: '#333333',
+                        accent: '#0066ff',
+                        light: '#f5f5f5',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .nav-shadow {
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            }
+        }
+    </style>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #0066ff;
+            background-color: rgba(0, 102, 255, 0.05);
+        }
+        
+        .json-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .tag-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #f3f4f6;
+            border-radius: 9999px;
+            font-size: 12px;
+            margin: 2px;
+        }
+        
+        .processing-step {
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        
+        .processing-step.active {
+            opacity: 1;
+        }
+        
+        .processing-step.complete {
+            opacity: 1;
+        }
+        
+        .step-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e5e7eb;
+            color: #6b7280;
+            transition: all 0.3s ease;
+        }
+        
+        .processing-step.active .step-icon {
+            background: #0066ff;
+            color: white;
+        }
+        
+        .processing-step.complete .step-icon {
+            background: #10b981;
+            color: white;
+        }
+        
+        
+    </style>
+</head>
+<body class="bg-white text-primary font-sans">
+    <nav id="navbar" class="fixed top-0 left-0 w-full bg-white bg-opacity-95 nav-shadow py-4 z-50">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="flex justify-between items-center">
+                <a href="../index.html" class="text-2xl font-bold text-primary">Leo Qwx</a>
+                
+                <div class="hidden md:flex ml-auto space-x-8">
+                    <a href="../index.html" class="text-secondary hover:text-accent transition-colors">首页</a>
+                    <a href="../index.html#works" class="text-secondary hover:text-accent transition-colors">项目</a>
+                    <a href="../index.html#vibe-coding" class="text-secondary hover:text-accent transition-colors">Vibe coding实操</a>
+                    <a href="../index.html#about" class="text-secondary hover:text-accent transition-colors">关于</a>
+                    <a href="../index.html#contact" class="text-secondary hover:text-accent transition-colors">联系</a>
+                </div>
+                
+                <button id="menu-toggle" class="md:hidden ml-auto text-primary focus:outline-none">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="mobile-menu" class="md:hidden bg-white hidden absolute top-full left-0 w-full border-t border-gray-100">
+            <div class="container mx-auto px-4 py-4">
+                <a href="../index.html" class="block py-2 text-secondary hover:text-accent">首页</a>
+                <a href="../index.html#works" class="block py-2 text-secondary hover:text-accent">项目</a>
+                <a href="../index.html#vibe-coding" class="block py-2 text-secondary hover:text-accent">Vibe coding实操</a>
+                <a href="../index.html#about" class="block py-2 text-secondary hover:text-accent">关于</a>
+                <a href="../index.html#contact" class="block py-2 text-secondary hover:text-accent">联系</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pt-24 pb-16">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="max-w-4xl mx-auto">
+                <a href="../index.html#vibe-coding" class="inline-flex items-center text-gray-500 hover:text-accent mb-6">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    返回作品集
+                </a>
+                
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">电商图自动打标工作流</h1>
+                <p class="text-xl text-gray-600 mb-8">上传商品图，自动完成预处理、主题识别、标签提取，输出标准化JSON。</p>
+                
+                <div class="bg-gray-50 rounded-lg p-6 mb-12">
+                    <h3 class="font-semibold mb-4">功能特点</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center p-4 bg-white rounded-lg">
+                            <i class="fa fa-magic text-2xl text-accent mb-2"></i>
+                            <p class="text-sm">智能预处理</p>
+                        </div>
+                        <div class="text-center p-4 bg-white rounded-lg">
+                            <i class="fa fa-eye text-2xl text-accent mb-2"></i>
+                            <p class="text-sm">主题识别</p>
+                        </div>
+                        <div class="text-center p-4 bg-white rounded-lg">
+                            <i class="fa fa-tags text-2xl text-accent mb-2"></i>
+                            <p class="text-sm">多维标签</p>
+                        </div>
+                        <div class="text-center p-4 bg-white rounded-lg">
+                            <i class="fa fa-code text-2xl text-accent mb-2"></i>
+                            <p class="text-sm">JSON输出</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-6">处理流程</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div id="step-1" class="processing-step flex flex-col items-center p-4 bg-white rounded-lg shadow-sm text-center">
+                            <div class="step-icon mb-3">
+                                <i class="fa fa-image"></i>
+                            </div>
+                            <h4 class="font-medium text-sm">图片预处理</h4>
+                            <p class="text-xs text-gray-500 mt-1">自动校正旋转、增强模糊图片</p>
+                        </div>
+                        
+                        <div id="step-2" class="processing-step flex flex-col items-center p-4 bg-white rounded-lg shadow-sm text-center">
+                            <div class="step-icon mb-3">
+                                <i class="fa fa-search"></i>
+                            </div>
+                            <h4 class="font-medium text-sm">主题识别</h4>
+                            <p class="text-xs text-gray-500 mt-1">一句话概括商品主体</p>
+                        </div>
+                        
+                        <div id="step-3" class="processing-step flex flex-col items-center p-4 bg-white rounded-lg shadow-sm text-center">
+                            <div class="step-icon mb-3">
+                                <i class="fa fa-tags"></i>
+                            </div>
+                            <h4 class="font-medium text-sm">标签提取</h4>
+                            <p class="text-xs text-gray-500 mt-1">生成3-10个多维度标签</p>
+                        </div>
+                        
+                        <div id="step-4" class="processing-step flex flex-col items-center p-4 bg-white rounded-lg shadow-sm text-center">
+                            <div class="step-icon mb-3">
+                                <i class="fa fa-code"></i>
+                            </div>
+                            <h4 class="font-medium text-sm">JSON输出</h4>
+                            <p class="text-xs text-gray-500 mt-1">输出标准化JSON结果</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-6">上传商品图</h2>
+                        
+                        <div id="upload-area" class="upload-area rounded-lg p-8 text-center cursor-pointer mb-6">
+                            <div id="upload-placeholder">
+                                <i class="fa fa-cloud-upload text-5xl text-gray-400 mb-4"></i>
+                                <p class="text-gray-600 mb-2">点击或拖拽图片到此处</p>
+                                <p class="text-gray-400 text-sm">支持 JPG、PNG、WebP 格式</p>
+                            </div>
+                            <div id="upload-preview" class="hidden">
+                                <img id="preview-image" class="max-h-48 mx-auto rounded-lg mb-4">
+                                <p id="file-name" class="text-gray-600 text-sm"></p>
+                            </div>
+                            <input type="file" id="file-input" accept="image/*" class="hidden">
+                        </div>
+                        
+                        <div id="process-btn-container" class="hidden">
+                            <button id="process-btn" class="w-full py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition">
+                                <i class="fa fa-play mr-2"></i>开始处理
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-2xl font-bold mb-6">处理结果</h2>
+                        
+                        <div id="result-section" class="space-y-4 hidden">
+                            <div>
+                                <h3 class="font-semibold mb-2 text-sm">主题描述</h3>
+                                <div id="theme-result" class="p-4 bg-gray-50 rounded-lg text-lg min-h-[60px] flex items-center"></div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="font-semibold mb-2 text-sm">语义标签</h3>
+                                <div id="tags-result" class="p-4 bg-gray-50 rounded-lg min-h-[60px] flex flex-wrap gap-2"></div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="font-semibold mb-2 text-sm">JSON输出</h3>
+                                <div id="json-result" class="json-output p-4 rounded-lg max-h-48 overflow-auto"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="border-t pt-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold">历史记录</h2>
+                        <button id="clear-history-btn" class="px-4 py-2 text-sm text-gray-500 hover:text-red-500 transition">
+                            <i class="fa fa-trash mr-1"></i>清空历史
+                        </button>
+                    </div>
+                    <div id="history-list" class="space-y-3">
+                        <div class="text-center py-8 text-gray-400">
+                            <i class="fa fa-history text-3xl mb-2"></i>
+                            <p>暂无历史记录</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var menuToggle = document.getElementById('menu-toggle');
+        var mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        
+        
+        var uploadArea = document.getElementById('upload-area');
+        var fileInput = document.getElementById('file-input');
+        var uploadPlaceholder = document.getElementById('upload-placeholder');
+        var uploadPreview = document.getElementById('upload-preview');
+        var previewImage = document.getElementById('preview-image');
+        var fileName = document.getElementById('file-name');
+        var processBtnContainer = document.getElementById('process-btn-container');
+        var processBtn = document.getElementById('process-btn');
+        var resultSection = document.getElementById('result-section');
+        var imageData = null;
+        var historyData = JSON.parse(localStorage.getItem('imageTaggingHistory') || '[]');
+        
+        function renderHistory() {
+            var historyList = document.getElementById('history-list');
+            if (historyData.length === 0) {
+                historyList.innerHTML = '<div class="text-center py-8 text-gray-400"><i class="fa fa-history text-3xl mb-2"></i><p>暂无历史记录</p></div>';
+                return;
+            }
+            historyList.innerHTML = '';
+            historyData.slice().reverse().forEach(function(item, index) {
+                var card = document.createElement('div');
+                card.className = 'bg-gray-50 rounded-lg p-4 flex gap-4 cursor-pointer hover:bg-gray-100 transition';
+                card.innerHTML = '<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0"><img src="' + item.imageData + '" class="w-full h-full object-cover"></div><div class="flex-1 min-w-0"><p class="font-medium truncate">' + item.theme + '</p><p class="text-sm text-gray-500 truncate">' + item.tags + '</p><p class="text-xs text-gray-400 mt-1">' + item.time + '</p></div>';
+                card.addEventListener('click', function() {
+                    document.getElementById('preview-image').src = item.imageData;
+                    document.getElementById('file-name').textContent = '历史记录';
+                    document.getElementById('upload-placeholder').classList.add('hidden');
+                    document.getElementById('upload-preview').classList.remove('hidden');
+                    document.getElementById('theme-result').textContent = item.theme;
+                    document.getElementById('tags-result').innerHTML = '';
+                    item.tagList.forEach(function(tag) {
+                        var pill = document.createElement('span');
+                        pill.className = 'tag-pill';
+                        pill.textContent = tag;
+                        document.getElementById('tags-result').appendChild(pill);
+                    });
+                    document.getElementById('json-result').textContent = JSON.stringify(JSON.parse(item.jsonData), null, 2);
+                    imageData = item.imageData;
+                });
+                historyList.appendChild(card);
+            });
+        }
+        
+        renderHistory();
+        
+        document.getElementById('clear-history-btn').addEventListener('click', function() {
+            if (confirm('确定要清空所有历史记录吗？')) {
+                historyData = [];
+                localStorage.removeItem('imageTaggingHistory');
+                renderHistory();
+            }
+        });
+        
+        uploadArea.addEventListener('click', function() {
+            fileInput.click();
+        });
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', function() {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            var files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', function() {
+            if (fileInput.files.length > 0) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+        
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('请上传图片文件');
+                return;
+            }
+            
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                fileName.textContent = file.name;
+                uploadPlaceholder.classList.add('hidden');
+                uploadPreview.classList.remove('hidden');
+                processBtnContainer.classList.remove('hidden');
+                resultSection.classList.add('hidden');
+                
+                imageData = e.target.result;
+                resetSteps();
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function resetSteps() {
+            for (var i = 1; i <= 4; i++) {
+                var step = document.getElementById('step-' + i);
+                step.classList.remove('active', 'complete');
+            }
+        }
+        
+        function activateStep(stepNum) {
+            var step = document.getElementById('step-' + stepNum);
+            step.classList.add('active');
+        }
+        
+        function completeStep(stepNum) {
+            var step = document.getElementById('step-' + stepNum);
+            step.classList.remove('active');
+            step.classList.add('complete');
+        }
+        
+        processBtn.addEventListener('click', async function() {
+            if (!imageData) {
+                alert('请先上传图片');
+                return;
+            }
+            
+            processBtn.disabled = true;
+            processBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>处理中...';
+            
+            resetSteps();
+            resultSection.classList.add('hidden');
+            
+            await processWithDoubao(imageData);
+            
+            processBtn.disabled = false;
+            processBtn.innerHTML = '<i class="fa fa-play mr-2"></i>开始处理';
+        });
+        
+        async function processWithDoubao(imageBase64) {
+            activateStep(1);
+            
+            var apiKey = 'ark-01720300-0eaf-453f-b54d-30b5090fcd89-a2a51';
+            var modelName = 'ep-20260419225251-nxjrn';
+            var apiUrl = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
+            
+            var base64Data = imageBase64.split(',')[1];
+            var mimeType = imageBase64.split(';')[0].split(':')[1];
+            
+            completeStep(1);
+            activateStep(2);
+            
+            try {
+                var response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + apiKey
+                    },
+                    body: JSON.stringify({
+                        model: modelName,
+                        messages: [{
+                            role: 'user',
+                            content: [
+                                {
+                                    type: 'image_url',
+                                    image_url: {
+                                        url: 'data:' + mimeType + ';base64,' + base64Data
+                                    }
+                                },
+                                {
+                                    type: 'text',
+                                    text: '你是一个电商图片分析专家。请分析这张商品图片，并按以下JSON格式输出结果：\n\n{\n    "主题描述": "一句话概括商品主体（如果无法识别，返回\'无法识别\'）",\n    "语义标签": [\n        {"标签": "标签名", "维度": "品类/场景/材质/风格/颜色/功能"},\n        ...\n    ]\n}\n\n要求：\n1. 主题描述要简洁，准确概括图片中的商品\n2. 生成3-10个适合电商搜索的标签\n3. 标签维度要多样化，涵盖品类、场景、材质、风格、颜色、功能等\n4. 只输出JSON格式，不要有其他内容'
+                                }
+                            ]
+                        }],
+                        max_tokens: 2048,
+                        temperature: 0.1
+                    })
+                });
+                
+                completeStep(2);
+                activateStep(3);
+                
+                if (!response.ok) {
+                    var errorText = await response.text();
+                    throw new Error('API请求失败: ' + response.status + ' ' + errorText);
+                }
+                
+                var data = await response.json();
+                
+                completeStep(3);
+                activateStep(4);
+                
+                if (data.error) {
+                    throw new Error(data.error.message || 'API返回错误');
+                }
+                
+                var text = data.choices?.[0]?.message?.content;
+                
+                if (!text) {
+                    throw new Error('未获取到有效的识别结果');
+                }
+                
+                var jsonMatch = text.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) {
+                    throw new Error('无法解析JSON格式结果');
+                }
+                
+                var resultData = JSON.parse(jsonMatch[0]);
+                
+                completeStep(4);
+                
+                showResults(resultData);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                completeStep(4);
+                alert('识别失败: ' + error.message);
+            }
+        }
+        
+        function showResults(data) {
+            var themeResult = document.getElementById('theme-result');
+            var tagsResult = document.getElementById('tags-result');
+            var jsonResult = document.getElementById('json-result');
+            
+            themeResult.textContent = data['主题描述'] || '无法识别';
+            
+            tagsResult.innerHTML = '';
+            var tagList = [];
+            if (data['语义标签'] && Array.isArray(data['语义标签'])) {
+                data['语义标签'].forEach(function(tag) {
+                    var pill = document.createElement('span');
+                    pill.className = 'tag-pill';
+                    pill.textContent = tag['标签'];
+                    tagsResult.appendChild(pill);
+                    tagList.push(tag['标签']);
+                });
+            }
+            
+            jsonResult.textContent = JSON.stringify(data, null, 2);
+            
+            resultSection.classList.remove('hidden');
+            
+            var historyItem = {
+                imageData: imageData,
+                theme: data['主题描述'] || '无法识别',
+                tags: tagList.join('、'),
+                tagList: tagList,
+                jsonData: JSON.stringify(data),
+                time: new Date().toLocaleString('zh-CN')
+            };
+            historyData.push(historyItem);
+            if (historyData.length > 20) {
+                historyData = historyData.slice(-20);
+            }
+            localStorage.setItem('imageTaggingHistory', JSON.stringify(historyData));
+            renderHistory();
+        }
+    </script>
+</body>
+</html>
