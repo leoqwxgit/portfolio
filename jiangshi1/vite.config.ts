@@ -23,9 +23,9 @@ export default defineConfig(({mode}) => {
     build: {
       rollupOptions: {
         output: {
-          entryFileNames: 'assets/index.js',
+          entryFileNames: 'assets/game.js',
           chunkFileNames: 'assets/[name].js',
-          assetFileNames: 'assets/[name].[ext]',
+          assetFileNames: 'assets/game.[ext]',
         },
       },
     },
